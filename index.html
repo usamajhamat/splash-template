@@ -1,132 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="keywords" content="WiFi, Guest Access, Captive Portal" />
-  <meta name="description" content="Guest WiFi Access Portal" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <link rel="shortcut icon" type="image/png" href="favicon.png" />
-
+  <meta charset="UTF-8">
+  <title>Connect to Internet</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .content {
-      max-width: 400px;
-      width: 90%;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
+      font-family: sans-serif;
+      background: #f0f0f0;
       text-align: center;
-      padding: 20px;
+      padding-top: 100px;
     }
-
-    .body h1 {
-      color: #2c3e50;
-      font-size: 24px;
-      margin: 10px 0;
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+      display: inline-block;
     }
-
-    .body h3 {
-      color: #7f8c8d;
-      font-size: 16px;
-      font-weight: normal;
-      margin: 10px 0 20px;
-    }
-
-    .footer {
-      padding: 20px 0;
-    }
-
-    .button {
-      background: #3498db;
+    button {
+      background-color: #007bff;
       color: white;
+      font-size: 18px;
+      padding: 10px 30px;
       border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 5px;
       cursor: pointer;
-      transition: background 0.3s ease;
-      width: 100%;
-      max-width: 200px;
     }
-
-    .button:hover {
-      background: #2980b9;
-    }
-
-    @media (max-width: 480px) {
-      .content {
-        margin: 20px;
-      }
-
-      .body h1 {
-        font-size: 20px;
-      }
-
-      .body h3 {
-        font-size: 14px;
-      }
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
-
-  <title>Guest WiFi Portal</title>
-
-  <script type="text/javascript">
-    function getParameterByName(name, url = window.location.href) {
-      name = name.replace(/[\[\]]/g, "\\$&");
-      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-          results = regex.exec(url);
-      if (!results) return null;
-      if (!results[2]) return "";
-      return decodeURIComponent(results[2].replace(/\+/g, " "));
-    }
-
-    function buildLoginURL() {
-      const apIP = getParameterByName("ap_ip");
-      const apPort = getParameterByName("ap_port");
-      if (!apIP || !apPort) {
-        console.error("Missing ap_ip or ap_port");
-        return null;
-      }
-       return `http://${apIP}:${apPort}/captive/grant/`;
-    }
-
-    window.onload = function () {
-      const loginURL = buildLoginURL();
-      if (loginURL) {
-        document.loginForm.action = loginURL;
-        const successURL = getParameterByName("user_url") || "https://www.google.com";
-        document.getElementById("successURLInput").value = successURL;
-      } else {
-        alert("Error: Unable to construct login URL. Please check AP configuration.");
-      }
-    };
-  </script>
 </head>
 <body>
-  <div class="content">
-    <div class="body">
-      <h1>Welcome to Guest WiFi</h1>
-      <h3>Click below to connect to the internet</h3>
-    </div>
-    <div class="footer">
-      <form name="loginForm" method="post">
-        <input id="successURLInput" type="hidden" name="success_url" />
-        <input type="hidden" name="username" value="guest" />
-        <input type="hidden" name="password" value="guest" />
-        <button type="submit" class="button">Connect Now</button>
-      </form>
-    </div>
+
+  <div class="container">
+    <h2>Welcome to Wi-Fi</h2>
+    <p>Click below to connect to the internet</p>
+    
+    <form id="connect-form" method="POST">
+      <!-- These values will be filled dynamically with JavaScript -->
+      <input type="hidden" name="success_url" id="success_url">
+      <input type="hidden" name="username" value="guest_user">
+      <input type="hidden" name="password" value="no_password">
+
+      <button type="submit">Connect</button>
+    </form>
   </div>
+
+  <script>
+    // Extract login_url and success_url from URL parameters
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const loginUrl = getQueryParam("login_url");
+    const continueUrl = getQueryParam("continue_url");
+
+    if (loginUrl) {
+      document.getElementById("connect-form").action = loginUrl;
+    }
+    if (continueUrl) {
+      document.getElementById("success_url").value = continueUrl;
+    }
+  </script>
+
 </body>
 </html>
