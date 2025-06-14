@@ -1,93 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Free WiFi</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      text-align: center;
-    }
-    button {
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .error {
-      color: red;
-      margin-top: 1rem;
-    }
-    .debug {
-      font-size: 0.85rem;
-      margin-top: 1rem;
-      color: #333;
-      text-align: left;
-    }
-  </style>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="WiFi, Guest Access, Captive Portal" />
+    <meta name="description" content="Guest WiFi Access Portal" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="shortcut icon" type="image/png" href="favicon.png" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .content {
+            max-width: 400px;
+            width: 90%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .body h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .body h3 {
+            color: #7f8c8d;
+            font-size: 16px;
+            font-weight: normal;
+            margin: 10px 0 20px;
+        }
+
+        .footer {
+            padding: 20px 0;
+        }
+
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .button:hover {
+            background: #2980b9;
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                margin: 20px;
+            }
+
+            .body h1 {
+                font-size: 20px;
+            }
+
+            .body h3 {
+                font-size: 14px;
+            }
+        }
+    </style>
+
+    <title>Guest WiFi Portal</title>
+
+    <script type="text/javascript">
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return "";
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        function buildURL(url) {
+            let result;
+            try {
+                result = new URL(url);
+            } catch (e) {
+                return null;
+            }
+            return result;
+        }
+
+        function getLoginURL() {
+            let loginURL = buildURL(getParameterByName("login_url"));
+            if (!loginURL) {
+                console.error("Invalid login URL");
+                return null;
+            }
+            return loginURL.toString();
+        }
+
+        window.onload = function () {
+            const loginURL = getLoginURL();
+            if (loginURL) {
+                document.loginForm.action = loginURL;
+                document.getElementById("successURLInput").value = getParameterByName("continue_url") || "https://www.google.com";
+            } else {
+                alert("Error: Unable to configure login URL. Please contact support.");
+            }
+        };
+    </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Welcome to Free WiFi</h1>
-    <p>Click the button below to connect to the internet.</p>
-
-    <form id="loginForm" method="POST">
-      <input type="hidden" name="username" value="username" />
-      <input type="hidden" name="password" value="password" />
-      <input id="success_url" type="hidden" name="success_url" />
-      <button type="submit">Connect</button>
-      <div class="error" id="error"></div>
-    </form>
-
-    <div class="debug" id="debug"></div>
-  </div>
-
-  <script>
-    function getParam(key) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(key);
-    }
-
-    window.onload = () => {
-      const loginUrl = getParam("login_url");
-      const successUrl = getParam("user_url");
-
-      if (loginUrl) {
-        document.getElementById("loginForm").action = loginUrl;
-        document.getElementById("success_url").value = successUrl || "http://example.com";
-      } else {
-        document.getElementById("error").textContent =
-          "❌ Error: Missing login_url from Tanaza. Check redirect settings.";
-      }
-
-      // Debugging info
-      const debugBox = document.getElementById("debug");
-      const params = Array.from(new URLSearchParams(window.location.search).entries());
-      if (params.length > 0) {
-        debugBox.innerHTML =
-          "<strong>Debugging Tanaza Query Params</strong><br/>" +
-          params.map(([k, v]) => `${k}: ${v}`).join("<br/>");
-      } else {
-        debugBox.innerHTML = "No query parameters found.";
-      }
-    };
-  </script>
+    <div class="content">
+        <div class="body">
+            <h1>Welcome to Guest WiFi</h1>
+            <h3>Click below to connect to the internet</h3>
+        </div>
+        <div class="footer">
+            <form name="loginForm" method="post">
+                <input id="successURLInput" type="hidden" name="success_url" />
+                <input type="hidden" name="username" value="guest" />
+                <input type="hidden" name="password" value="guest" />
+                <button type="submit" class="button">Connect Now</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
