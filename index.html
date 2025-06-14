@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Free WiFi</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      text-align: center;
+    }
+    button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      margin-top: 1rem;
+    }
+    .debug {
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      color: #333;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Free WiFi</h1>
+    <p>Click the button below to connect to the internet.</p>
+
+    <form id="loginForm" method="POST">
+      <input type="hidden" name="username" value="username" />
+      <input type="hidden" name="password" value="password" />
+      <input id="success_url" type="hidden" name="success_url" />
+      <button type="submit">Connect</button>
+      <div class="error" id="error"></div>
+    </form>
+
+    <div class="debug" id="debug"></div>
+  </div>
+
+  <script>
+    function getParam(key) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(key);
+    }
+
+    window.onload = () => {
+      const loginUrl = getParam("login_url");
+      const successUrl = getParam("user_url");
+
+      if (loginUrl) {
+        document.getElementById("loginForm").action = loginUrl;
+        document.getElementById("success_url").value = successUrl || "http://example.com";
+      } else {
+        document.getElementById("error").textContent =
+          "❌ Error: Missing login_url from Tanaza. Check redirect settings.";
+      }
+
+      // Debugging info
+      const debugBox = document.getElementById("debug");
+      const params = Array.from(new URLSearchParams(window.location.search).entries());
+      if (params.length > 0) {
+        debugBox.innerHTML =
+          "<strong>Debugging Tanaza Query Params</strong><br/>" +
+          params.map(([k, v]) => `${k}: ${v}`).join("<br/>");
+      } else {
+        debugBox.innerHTML = "No query parameters found.";
+      }
+    };
+  </script>
+</body>
+</html>
