@@ -83,6 +83,7 @@
 
     <script type="text/javascript">
         function getParameterByName(name, url = window.location.href) {
+            console.log(new URLSearchParams(window.location.search));
             name = name.replace(/[\[\]]/g, "\\$&");
             var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
                 results = regex.exec(url);
@@ -116,6 +117,7 @@
                 document.loginForm.action = loginURL;
                 document.getElementById("successURLInput").value = getParameterByName("continue_url") || "https://www.google.com";
             } else {
+                console.log(new URLSearchParams(window.location.search));
                 alert("Error: Unable to configure login URL. Please contact support.");
             }
         };
